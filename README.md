@@ -1,7 +1,7 @@
 # Hack_UO
 
 ## Super Swag Schedule Scheduler
-### built by team CATSK in 24 hours from Janurary 18th - 19th for QuackHacks Winter 2025
+### built by team CATSK in 24 hours for QuackHacks Winter 2025
 
 Have you ever been frustrated trying to schedule a meeting time among your fellow UO students? With CATSK's Super Swag Schedule Scheduler, fret no more.
 
@@ -9,5 +9,6 @@ Using the "Choose File" button, select multiple student schedules downloaded in 
 
 Contributors:
 Clio Tsao, Aaron Reyes Rodriguez, Tara Disser, Sewon Sohn, Kate Spencer
+Janurary 18-19, 2025
 
 Dependencies: BeautifulSoup (bs4), Flask
