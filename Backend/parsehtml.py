@@ -23,26 +23,30 @@ def extract_info_from_html(file_path):
         print(f"Error: The file '{file_path}' does not exist.")
 
 def save_class_info(soup):
-    td_tags = soup.find_all('td')
-    class1_name = td_tags[30].get_text() 
-    class1_git  = td_tags[37]
+    target_table = soup.find_all("table", class_="datadisplaytable")
+    for child in target_table[1].children:
+        print(child)
+
+    # td_tags = soup.find_all('td')
+    # class1_name = td_tags[30].get_text() 
+    # class1_git  = td_tags[37]
 
 # untested addition
 # extract the class schedule
-data = []
-for link in soup.find_all("CLASS"):
-    course = link.text.strip()  # Get the text
-    href = link.get("href")   # Get the href attribute
-    if href:  # Ensure the link is not None
-        data.append({"course": course, "link": href})
+# data = []
+# for link in soup.find_all("CLASS"):
+#     course = link.text.strip()  # Get the text
+#     href = link.get("href")   # Get the href attribute
+#     if href:  # Ensure the link is not None
+#         data.append({"course": course, "link": href})
 
 # convert and save as JSON
-json_data = json.dumps(data, indent=4)
+# json_data = json.dumps(data, indent=4)
 
-with open("data.json", "w") as file:
-    file.write(json_data)
+# with open("data.json", "w") as file:
+#     file.write(json_data)
 
-print("Data saved to data.json")
+# print("Data saved to data.json")
 
 #^--untested addition end
 
