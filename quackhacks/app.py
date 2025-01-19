@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 from bs4 import BeautifulSoup
-from Backend.parsehtml import extract_info_from_html
+from Backend.parsehtml.py import extract_info_from_html
+import os
+
 
 app = Flask(__name__)
 
