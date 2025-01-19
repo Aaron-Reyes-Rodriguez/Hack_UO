@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import sys
 import json
-
 import argparse
 
 def extract_info_from_html(file_path):
@@ -97,27 +96,13 @@ def list_to_dict(course_total, times_list, days_list):
         course_info.append(end_times_list[i])
         course_dict = dict(zip(keys, course_info))
         schedule.append(course_dict)
-    print(schedule)
+    dict_to_json(schedule)
 
+def dict_to_json(schedule_dict):
+    json_string = json.dumps(schedule_dict, indent=4)
+    return json_string
+    #print(json_string)
 
-# untested addition
-# extract the class schedule
-# data = []
-# for link in soup.find_all("CLASS"):
-#     course = link.text.strip()  # Get the text
-#     href = link.get("href")   # Get the href attribute
-#     if href:  # Ensure the link is not None
-#         data.append({"course": course, "link": href})
-
-# convert and save as JSON
-# json_data = json.dumps(data, indent=4)
-
-# with open("data.json", "w") as file:
-#     file.write(json_data)
-
-# print("Data saved to data.json")
-
-#^--untested addition end
 
 #pull file name passed into function
 if __name__ == "__main__":
