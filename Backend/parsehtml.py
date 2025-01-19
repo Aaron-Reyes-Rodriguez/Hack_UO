@@ -27,7 +27,7 @@ def save_class_info(soup):
     class1_name = td_tags[30].get_text() 
     class1_git  = td_tags[37]
 
-# untested additionnnn
+# untested addition
 # extract the class schedule
 data = []
 for link in soup.find_all("CLASS"):
