@@ -5,19 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <title>Schedule Planner</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}">
 </head>
 <body>
-    <div class="container mt-5">
-        <h1>Upload Your Schedule Files</h1>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <input type="file" class="form-control-file" name="scheduleFiles" multiple required>
-            </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
+    <div class="container">
+        <div class="container_header">
+            <h1>Super Swag Schedule Scheduler</h1>
+        </div>
+        <div class="container_body">
+            <h2>Upload Your Schedule Files</h2>
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <input type="file" id="scheduleFiles" name="scheduleFiles" multiple required hidden>
+                    <label for="scheduleFiles" class="btn btn-primary">Choose Files</label>
+                    <span id="fileNames" class="ml-2 text-muted">No file chosen</span>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // show the file names
+        document.getElementById('scheduleFiles').addEventListener('change', function () {
+            const fileNames = Array.from(this.files).map(file => file.name).join(', ');
+            document.getElementById('fileNames').textContent = fileNames || 'No file chosen';
+        });
+    </script>
 </body>
 </html>

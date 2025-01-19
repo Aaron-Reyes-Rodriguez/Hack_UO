@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='result.css') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule Result</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: "Lucida Console", monospace;
+            margin: 20px; 
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            background-color: #ddd;
         }
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            border: 0px solid #ddd;
+            padding: 0px;
             text-align: left;
         }
         th {
@@ -28,33 +30,151 @@
         }
     </style>
 </head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Result</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 0px;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .empty {
+            background-color: #f8d7da;
+        }
+    </style>
+</head>
 <body>
-    <h1>Schedule Result</h1>
-    <table>
+    <div class="container_header">
+        <h1>Schedule Result</h1>
+    </div>
+    <table border="1">
         <thead>
             <tr>
-                <th>Day</th>
                 <th>Time Intervals</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
             </tr>
         </thead>
         <tbody>
-            {% for day, intervals in data.items() %}
-                <tr>
-                    <td>{{ day }}</td>
-                    <td>
-                        {% if intervals %}
-                            <ul>
-                                {% for start, end in intervals %}
-                                    <li>{{ start }} - {{ end }}</li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <span class="empty">No intervals</span>
-                        {% endif %}
-                    </td>
-                </tr>
+            {% for hour in range(24) %}
+                {% for minute in [0, 30] %}
+                    <tr>
+                        <td>
+                            {{ "%02d:%02d" % ((hour - 1) % 12 + 1, minute) }}{{ " AM" if hour < 12 else " PM" }}
+                        </td>
+                        {% for day in data.keys() %}
+                            <td class="schedule-cell" 
+                                data-day="{{ day }}" 
+                                data-interval-start="{{ '%02d:%02d' % (hour, minute) }}" 
+                                data-interval-end="{{ '%02d:%02d' % (hour + (1 if minute == 30 else 0), (minute + 30) % 60) }}" 
+                                data-intervals='{{ data[day]|tojson }}'>
+                                TBD
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
             {% endfor %}
         </tbody>
     </table>
+
+    <script>
+        function updateSchedule() {
+            const cells = document.querySelectorAll('.schedule-cell');
+
+            cells.forEach(cell => {
+                const intervalStart = cell.getAttribute('data-interval-start');
+                const intervalEnd = cell.getAttribute('data-interval-end');
+                const intervals = JSON.parse(cell.getAttribute('data-intervals')); // Parse the intervals JSON
+
+                let isOccupied = true;
+                console.log(intervals)
+                intervals.forEach((time) => {
+                    let start = time[0]
+                    let end = time[1]
+                    if (intervalStart >= start && intervalEnd <= end) {
+                        isOccupied = false;
+                    }
+
+                });
+
+                // Update the cell content and style based on the result
+                let business_hrs = true
+                if (intervalStart < "08:00" ||  intervalEnd > "17:00")
+                {
+                    business_hrs = false
+                }
+                
+            // Create the toggle button
+            const button = document.createElement('button');
+            button.style.border = "none";
+            button.style.padding = "10px 20px";
+            button.style.margin = "0";
+            button.style.cursor = "pointer";
+            button.style.fontSize = "14px";
+            button.style.width = "100%";
+            button.style.height = "100%";
+            //button.style.borderRadius = "5px";
+
+            // Function to update the button appearance and text
+            function updateButton() {
+                if (isOccupied) {
+                    button.innerText = "Occupied";
+                    if (business_hrs) {
+                        button.style.backgroundColor = "#C3C3C1";
+                        button.style.color = "black";
+                        button.style.fontFamily = '"Lucida Console", monospace';
+                    } else {
+                        button.style.backgroundColor = "#868888"; // Dark grey
+                        button.style.color = "white";
+                        button.style.fontFamily = '"Lucida Console", monospace';
+                    }
+                } else {
+                    button.innerText = "Free";
+                    if (business_hrs) {
+                        button.style.backgroundColor = "#528844";
+                        button.style.color = "white";
+                        button.style.fontFamily = '"Lucida Console", monospace';
+                    } else {
+                        button.style.backgroundColor = "#284525"; // Dark green
+                        button.style.color = "white";
+                        button.style.fontFamily = '"Lucida Console", monospace';
+                    }
+                }
+            }
+
+            // Initial button setup
+            updateButton();
+
+            // Add click event listener to toggle state
+            button.addEventListener('click', () => {
+                isOccupied = !isOccupied; // Toggle state
+                updateButton();
+            });
+
+            // Clear cell and append the button
+            cell.innerHTML = "";
+            cell.appendChild(button);
+        });
+    }
+
+    // Call the function to update the table
+    updateSchedule();
+    </script>
 </body>
+
+
 </html>

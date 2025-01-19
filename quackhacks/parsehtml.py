@@ -2,20 +2,21 @@ from bs4 import BeautifulSoup
 import sys
 import json
 import argparse
+import os
 
 def extract_info_from_html(file_path):
     try:
         #if not an .html file
         if not file_path.lower().endswith('.html'):
             raise ValueError("Error: The provided file is not an HTML file.")
-        
+        print(os.path.exists(file_path))
         # Open and read the HTML file
         with open(file_path, 'r', encoding='utf-8') as file:
             content = file.read()
 
         # Parse the HTML content with BeautifulSoup
         soup = BeautifulSoup(content, 'html.parser')
-        save_class_info(soup)
+        return save_class_info(soup)
 
     #if file is not found
     except FileNotFoundError:
@@ -47,7 +48,7 @@ def save_class_info(soup):
             for time in grandchildren[9]:
                 times_list.append(time)
     course_total = [' '.join(z) for z in zip(course_nums_list, course_names_list)]
-    list_to_dict(course_total, times_list, days_list)
+    return list_to_dict(course_total, times_list, days_list)
 
 def convert_to_24_hour_start_end(time_range):
     # Split the time range into start and end times
@@ -82,9 +83,15 @@ def list_to_dict(course_total, times_list, days_list):
     start_times_list = []
     end_times_list = []
     for time in times_list:
-        start_time, end_time = convert_to_24_hour_start_end(time)
-        start_times_list.append(start_time)
-        end_times_list.append(end_time)
+        try:
+            start_time, end_time = convert_to_24_hour_start_end(time)
+            start_times_list.append(start_time)
+            end_times_list.append(end_time)
+        except:
+            start_time = f"{00:02}:{00:02}"
+            end_time = f"{00:02}:{00:02}"
+            start_times_list.append(start_time)
+            end_times_list.append(end_time)
     # print(start_times_list)
     # print(end_times_list)
 
@@ -100,11 +107,11 @@ def list_to_dict(course_total, times_list, days_list):
         course_info.append(end_times_list[i])
         course_dict = dict(zip(keys, course_info))
         schedule.append(course_dict)
-    dict_to_json(schedule)
+    return dict_to_json(schedule)
 
 def dict_to_json(schedule_dict):
     json_string = json.dumps(schedule_dict, indent=4)
-    return json_string
+    return schedule_dict
     #print(json_string)
 
 
@@ -114,4 +121,4 @@ if __name__ == "__main__":
     parser.add_argument('file_path', help="The path to the HTML file")
     args = parser.parse_args()
 
-extract_info_from_html(args.file_path)
+#extract_info_from_html(args.file_path)
