@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 # from bs4 import BeautifulSoup
-# from Backend.parsehtml.py import extract_info_from_html
+from database.parsehtml import extract_info_from_html
 import os
 from utils import find_common_free_times
 
@@ -32,13 +32,13 @@ def upload_files():
     parsed_data = []
     
     for file in files:
-        #if file and allowed_file(file.filename):
+        if file and allowed_file(file.filename):
             # Save the file to the upload folder
-            #filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-            #file.save(filename)
+            filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(file.filename)
             # Store the result for this file
-            #parsed_data.append(extract_info_from_html(filename))
-        continue
+            #print(os.path.exists(filename))
+            parsed_data.append(extract_info_from_html(file.filename))
     schedules = [
     [{
         "user_id": 1,
@@ -77,8 +77,8 @@ def upload_files():
 # Calculate common free times using the dummy data
     common_free_times = find_common_free_times(schedules)
 
-    #result = find_common_free_times(parsed_data)
-    result = common_free_times
+    result = find_common_free_times(parsed_data)
+    #result = common_free_times
     # Render the result page with parsed data from all files
     return render_template('result.html', data=result)
 
