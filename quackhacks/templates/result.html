@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='result.css') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule Result</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 20px; 
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            background-color: #ddd;
         }
         th, td {
             border: 1px solid #ddd;
@@ -28,33 +30,124 @@
         }
     </style>
 </head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Result</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 8px;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .empty {
+            background-color: #f8d7da;
+        }
+    </style>
+</head>
 <body>
     <h1>Schedule Result</h1>
-    <table>
+    <table border="1">
         <thead>
             <tr>
-                <th>Day</th>
                 <th>Time Intervals</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
             </tr>
         </thead>
         <tbody>
-            {% for day, intervals in data.items() %}
-                <tr>
-                    <td>{{ day }}</td>
-                    <td>
-                        {% if intervals %}
-                            <ul>
-                                {% for start, end in intervals %}
-                                    <li>{{ start }} - {{ end }}</li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <span class="empty">No intervals</span>
-                        {% endif %}
-                    </td>
-                </tr>
+            {% for hour in range(24) %}
+                {% for minute in [0, 30] %}
+                    <tr>
+                        <td>
+                            {{ "%02d:%02d" % ((hour - 1) % 12 + 1, minute) }}{{ " AM" if hour < 12 else " PM" }} - 
+                            {{ "%02d:%02d" % (((hour + (1 if minute == 30 else 0) - 1) % 12 + 1), (minute + 30) % 60) }}{{ " AM" if (hour + (1 if minute == 30 else 0)) < 12 else " PM" }}
+                        </td>
+                        {% for day in data.keys() %}
+                            <td class="schedule-cell" 
+                                data-day="{{ day }}" 
+                                data-interval-start="{{ '%02d:%02d' % (hour, minute) }}" 
+                                data-interval-end="{{ '%02d:%02d' % (hour + (1 if minute == 30 else 0), (minute + 30) % 60) }}" 
+                                data-intervals='{{ data[day]|tojson }}'>
+                                TBD
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
             {% endfor %}
         </tbody>
     </table>
+
+    <script>
+        function updateSchedule() {
+            const cells = document.querySelectorAll('.schedule-cell');
+
+            cells.forEach(cell => {
+                const intervalStart = cell.getAttribute('data-interval-start');
+                const intervalEnd = cell.getAttribute('data-interval-end');
+                const intervals = JSON.parse(cell.getAttribute('data-intervals')); // Parse the intervals JSON
+
+                let isOccupied = true;
+                console.log(intervals)
+                intervals.forEach((time) => {
+                    let start = time[0]
+                    let end = time[1]
+                    if (intervalStart >= start && intervalEnd <= end) {
+                        isOccupied = false;
+                    }
+
+                });
+
+                // Update the cell content and style based on the result
+                let business_hrs = true
+                if (intervalStart < "08:00" ||  intervalEnd > "17:00")
+                {
+                    business_hrs = false
+                }
+                if (isOccupied) {
+                    cell.innerText = "Occupied";
+                    if (business_hrs)
+                    {
+                        cell.style.backgroundColor = "red";
+                        cell.style.color = "white";
+                    }
+                    else
+                    {
+                        cell.style.backgroundColor = "#8B0000"; // Dark red
+                        cell.style.color = "white"; 
+                    }
+                } else {
+                    cell.innerText = "Free";
+                    if (business_hrs)
+                    {
+                        cell.style.backgroundColor = "green";
+                        cell.style.color = "white";
+                    }
+                    else
+                    {
+                        cell.style.backgroundColor = "#0c4f00";
+                        cell.style.color = "white";
+                    }
+                }
+            });
+        }
+
+        // Call the function to update the table
+        updateSchedule();
+    </script>
 </body>
+
+
 </html>
