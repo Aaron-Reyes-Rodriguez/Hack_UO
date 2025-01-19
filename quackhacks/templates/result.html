@@ -7,7 +7,7 @@
     <title>Schedule Result</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Lucida Console", monospace;
             margin: 20px; 
         }
         table {
@@ -134,20 +134,24 @@
                 if (isOccupied) {
                     button.innerText = "Occupied";
                     if (business_hrs) {
-                        button.style.backgroundColor = "red";
-                        button.style.color = "white";
+                        button.style.backgroundColor = "#C3C3C1";
+                        button.style.color = "black";
+                        button.style.fontFamily = '"Lucida Console", monospace';
                     } else {
-                        button.style.backgroundColor = "#8B0000"; // Dark red
+                        button.style.backgroundColor = "#868888"; // Dark grey
                         button.style.color = "white";
+                        button.style.fontFamily = '"Lucida Console", monospace';
                     }
                 } else {
                     button.innerText = "Free";
                     if (business_hrs) {
-                        button.style.backgroundColor = "green";
+                        button.style.backgroundColor = "#528844";
                         button.style.color = "white";
+                        button.style.fontFamily = '"Lucida Console", monospace';
                     } else {
-                        button.style.backgroundColor = "#0c4f00"; // Dark green
+                        button.style.backgroundColor = "#284525"; // Dark green
                         button.style.color = "white";
+                        button.style.fontFamily = '"Lucida Console", monospace';
                     }
                 }
             }
