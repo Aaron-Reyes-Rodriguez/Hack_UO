@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from bs4 import BeautifulSoup
-import os
+from Backend.parsehtml import extract_info_from_html
 
 app = Flask(__name__)
 
@@ -34,31 +34,10 @@ def upload_files():
             # Save the file to the upload folder
             filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(filename)
-
-
-            # Open and parse the uploaded HTML file
-            with open(filename, 'r') as f:
-                html_content = f.read()
-            
-            # Parse the HTML content using BeautifulSoup
-            soup = BeautifulSoup(html_content, 'html.parser')
-
-            # Example: Extract all <h1> tags from the HTML
-            headers = soup.find_all('h1')
-            header_text = [header.text for header in headers]
-
             # Store the result for this file
-            parsed_data.append({
-                'filename': file.filename,
-                'headers': header_text
-            })
-        else:
-            # If a file is invalid
-            parsed_data.append({
-                'filename': file.filename,
-                'headers': 'Invalid file format!'
-            })
-
+            parsed_data.append(extract_info_from_html(filename))
+                
+    
     # Render the result page with parsed data from all files
     return render_template('result.html', parsed_data=parsed_data)
 
