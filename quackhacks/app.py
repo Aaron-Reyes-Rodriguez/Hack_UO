@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 # from bs4 import BeautifulSoup
+
 from parsehtml import extract_info_from_html
 import os
 from utils import find_common_free_times
@@ -32,11 +33,9 @@ def upload_files():
     for file in files:
         if file and allowed_file(file.filename):
             # Save the file to the upload folder
-            
             file.save(file.filename)
             # Store the result for this file
             parsed_data.append(extract_info_from_html(file.filename))
-
 # Calculate common free times using the dummy data
     result = find_common_free_times(parsed_data)
     print(result)

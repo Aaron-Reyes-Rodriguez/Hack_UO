@@ -83,9 +83,15 @@ def list_to_dict(course_total, times_list, days_list):
     start_times_list = []
     end_times_list = []
     for time in times_list:
-        start_time, end_time = convert_to_24_hour_start_end(time)
-        start_times_list.append(start_time)
-        end_times_list.append(end_time)
+        try:
+            start_time, end_time = convert_to_24_hour_start_end(time)
+            start_times_list.append(start_time)
+            end_times_list.append(end_time)
+        except:
+            start_time = f"{00:02}:{00:02}"
+            end_time = f"{00:02}:{00:02}"
+            start_times_list.append(start_time)
+            end_times_list.append(end_time)
     # print(start_times_list)
     # print(end_times_list)
 
