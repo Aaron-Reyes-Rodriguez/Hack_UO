@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
-from bs4 import BeautifulSoup
-from Backend.parsehtml.py import extract_info_from_html
+# from bs4 import BeautifulSoup
+# from Backend.parsehtml.py import extract_info_from_html
 import os
-from quackhacks.utils import find_common_free_times
+from utils import find_common_free_times
 
 app = Flask(__name__)
 
