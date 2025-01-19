@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import sys
 import json
-
 import argparse
 
 def extract_info_from_html(file_path):
@@ -29,50 +28,85 @@ def save_class_info(soup):
     for child in target_table[1].children: #tr tags
         child_ctr += 1
     
+    #getting the info into lists
+    course_nums_list = []
+    course_names_list = []
+    days_list = []
+    times_list = []
     index_ctr = 0
     for child in target_table[1].children:
         index_ctr += 1
         if index_ctr in range(4, child_ctr - 1, 2):
-            print(child)
+            grandchildren = child.find_all("td")
+            for num in grandchildren[1]:
+                course_nums_list.append(num)
+            for name in grandchildren[2]:
+                course_names_list.append(name)
+            for day in grandchildren[8]:
+                days_list.append(day)
+            for time in grandchildren[9]:
+                times_list.append(time)
+    course_total = [' '.join(z) for z in zip(course_nums_list, course_names_list)]
+    list_to_dict(course_total, times_list, days_list)
 
-    #print(target_table.find_all("tr"))
-    
-    
-    #print(child_ctr)
+def convert_to_24_hour_start_end(time_range):
+    # Split the time range into start and end times
+    start_time, end_time = time_range.split(" - ")
 
-    #for course in range(2, child_ctr - 5, 2):
-    #    grandchildren = courses.children
-    #    print(gran)
+    def to_24_hour(time):
+        # parse out am/pm
+        period = time[-2:].lower()
+        hours, minutes = map(int, time[:-2].split(":"))
 
-    #    child.children[0]
-    #    for grandchild in [0, 7, 8]: #td tags - Course number, days, times
-    #        
-    #        grandchild.get_text()
-    #    target_tr = target_table[1].find_all("tr")
-    #        for i in target_tr[
+        # to 24-hour
+        if period == "pm" and hours != 12:
+            hours += 12
+        elif period == "am" and hours == 12:
+            hours = 0
 
-    # td_tags = soup.find_all('td')
-    # class1_name = td_tags[30].get_text() 
-    # class1_git  = td_tags[37]
+        # format back to string
+        return f"{hours:02}:{minutes:02}"
 
-# untested addition
-# extract the class schedule
-# data = []
-# for link in soup.find_all("CLASS"):
-#     course = link.text.strip()  # Get the text
-#     href = link.get("href")   # Get the href attribute
-#     if href:  # Ensure the link is not None
-#         data.append({"course": course, "link": href})
+    # convert start and end times
+    start = to_24_hour(start_time)
+    end = to_24_hour(end_time)
 
-# convert and save as JSON
-# json_data = json.dumps(data, indent=4)
+    return start, end
 
-# with open("data.json", "w") as file:
-#     file.write(json_data)
+def parse_days_to_list(class_days):
+    day_list = list(class_days)
+    return day_list
 
-# print("Data saved to data.json")
+def list_to_dict(course_total, times_list, days_list):
+    #fix times
+    start_times_list = []
+    end_times_list = []
+    for time in times_list:
+        start_time, end_time = convert_to_24_hour_start_end(time)
+        start_times_list.append(start_time)
+        end_times_list.append(end_time)
+    # print(start_times_list)
+    # print(end_times_list)
 
-#^--untested addition end
+    keys = ['course', 'days', 'start_time', 'end_time']
+    num_courses = len(course_total)
+    course_dict = {}
+    schedule = []
+    for i in range(num_courses):
+        course_info = []
+        course_info.append(course_total[i])
+        course_info.append(parse_days_to_list(days_list[i]))
+        course_info.append(start_times_list[i])
+        course_info.append(end_times_list[i])
+        course_dict = dict(zip(keys, course_info))
+        schedule.append(course_dict)
+    dict_to_json(schedule)
+
+def dict_to_json(schedule_dict):
+    json_string = json.dumps(schedule_dict, indent=4)
+    return json_string
+    #print(json_string)
+
 
 #pull file name passed into function
 if __name__ == "__main__":
