@@ -34,6 +34,7 @@ def save_class_info(soup):
         index_ctr += 1
         if index_ctr in range(4, child_ctr - 1, 2):
             print(child)
+        
 
     #print(target_table.find_all("tr"))
     
