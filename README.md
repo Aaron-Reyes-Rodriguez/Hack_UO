@@ -76,6 +76,8 @@ Downloading the `.html` file needed to upload here can vary across computers.
 - **Backend**: Python, Flask
 - **Parsing**: BeautifulSoup
 
+---
+
 ## Contributors
 - Tara Disser
 - Aaron Reyes Rodriguez
