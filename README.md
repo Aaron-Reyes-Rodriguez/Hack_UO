@@ -61,6 +61,16 @@ Downloading the `.html` file needed to upload here can vary across computers.
 
 ---
 
+## Screenshots
+
+### 1. Home Page
+![Super Swag Schedule Scheduler Homepage](screenshots/file_upload_page.png)
+
+### 2. Schedule Display
+![Schedule Comparison Table](screenshots/schedule_display_page.png)
+
+---
+
 ## Technologies Used
 - **Frontend**: HTML, CSS, Bootstrap
 - **Backend**: Python, Flask
