@@ -48,7 +48,7 @@ def find_common_free_times(schedules):
         # Group courses by user
         user_schedules = defaultdict(list)
         for course in courses:
-            user_schedules[course['user_id']].append(course)
+            user_schedules[course['course']].append(course)
         
         # Calculate free times for each user
         free_times_by_user = {}
