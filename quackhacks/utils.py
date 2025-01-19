@@ -1,103 +1,61 @@
-# Contains utility functions like schedule comparison.
-
-from bs4 import BeautifulSoup
-import sqlite3
 from collections import defaultdict
-
-def extract_schedule_data(html_content):
-    soup = BeautifulSoup(html_content, 'lxml')
-    table = soup.find('table')
-    schedule_data = []
-    
-    if table:
-        for row in table.find_all('tr')[1:]:
-            columns = row.find_all('td')
-            if len(columns) >= 8:
-                course = columns[1].get_text(strip=True)
-                title = columns[2].get_text(strip=True)
-                days = columns[7].get_text(strip=True)
-                time = columns[8].get_text(strip=True)
-                
-                if time != "TBA":
-                    start_time, end_time = time.split(' - ')
-                else:
-                    start_time, end_time = "TBA", "TBA"
-                
-                schedule_data.append({
-                    'course': course,
-                    'title': title,
-                    'days': list(days),
-                    'start_time': start_time,
-                    'end_time': end_time
-                })
-    
-    return schedule_data
-
-def store_schedule_in_db(schedule_data):
-    conn = sqlite3.connect('database/schedules.db')
-    cursor = conn.cursor()
-    
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS schedules (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            course TEXT,
-            title TEXT,
-            day TEXT,
-            start_time TEXT,
-            end_time TEXT
-        )
-    ''')
-    
-    for entry in schedule_data:
-        for day in entry['days']:
-            cursor.execute('''
-                INSERT INTO schedules (course, title, day, start_time, end_time)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (entry['course'], entry['title'], day, entry['start_time'], entry['end_time']))
-    
-    conn.commit()
-    conn.close()
-
-def fetch_schedules():
-    conn = sqlite3.connect('database/schedules.db')
-    cursor = conn.cursor()
-    
-    cursor.execute('SELECT course, title, day, start_time, end_time FROM schedules')
-    rows = cursor.fetchall()
-    
-    conn.close()
-    
-    schedules = [
-        {
-            "course": row[0],
-            "title": row[1],
-            "days": [row[2]],
-            "start_time": row[3],
-            "end_time": row[4]
-        }
-        for row in rows
-    ]
-    
-    return schedules
 
 def convert_time_to_minutes(time_str):
     hours, minutes = map(int, time_str.split(':'))
     return hours * 60 + minutes
 
+def convert_minutes_to_time(minutes):
+    hours = minutes // 60
+    minutes = minutes % 60
+    return f"{hours:02}:{minutes:02}"
+
+def intersect_intervals(intervals1, intervals2):
+    i, j = 0, 0
+    result = []
+    
+    while i < len(intervals1) and j < len(intervals2):
+        start1, end1 = intervals1[i]
+        start2, end2 = intervals2[j]
+        
+        # Find the overlap
+        start = max(start1, start2)
+        end = min(end1, end2)
+        
+        if start < end:
+            result.append((start, end))
+        
+        # Move the pointer of the interval that ends first
+        if end1 < end2:
+            i += 1
+        else:
+            j += 1
+    
+    return result
+
 def find_common_free_times(schedules):
-    schedules_by_day = defaultdict(lambda: defaultdict(list))
-    for schedule in schedules:
-        for day in schedule['days']:
-            schedules_by_day[day][schedule['user_id']].append(schedule)
+    # Flatten schedules into a single list
+    all_courses = [course for user_schedule in schedules for course in user_schedule]
+    
+    # Group schedules by day
+    schedules_by_day = defaultdict(list)
+    for course in all_courses:
+        for day in course['days']:
+            schedules_by_day[day].append(course)
     
     common_free_times = defaultdict(list)
     
-    for day, user_schedules in schedules_by_day.items():
+    for day, courses in schedules_by_day.items():
+        # Group courses by user
+        user_schedules = defaultdict(list)
+        for course in courses:
+            user_schedules[course['user_id']].append(course)
+        
+        # Calculate free times for each user
         free_times_by_user = {}
         for user_id, classes in user_schedules.items():
             classes.sort(key=lambda x: convert_time_to_minutes(x['start_time']))
             free_times = []
-            end_of_last_class = 0
+            end_of_last_class = 0  # Start of the day in minutes
             
             for cls in classes:
                 start_time = convert_time_to_minutes(cls['start_time'])
@@ -105,15 +63,58 @@ def find_common_free_times(schedules):
                     free_times.append((end_of_last_class, start_time))
                 end_of_last_class = max(end_of_last_class, convert_time_to_minutes(cls['end_time']))
             
+            # Assume end of the day is 1440 minutes (24 hours)
             if end_of_last_class < 1440:
                 free_times.append((end_of_last_class, 1440))
             
             free_times_by_user[user_id] = free_times
         
-        common_times = set(free_times_by_user[next(iter(free_times_by_user))])
-        for free_times in free_times_by_user.values():
-            common_times.intersection_update(free_times)
+        # Find common free times across users
+        common_times = list(free_times_by_user.values())[0]
+        for free_times in list(free_times_by_user.values())[1:]:
+            common_times = intersect_intervals(common_times, free_times)
         
-        common_free_times[day] = list(common_times)
+        common_free_times[day] = [(convert_minutes_to_time(start), convert_minutes_to_time(end)) for start, end in common_times]
     
     return common_free_times
+
+# Example dummy JSON data
+schedules = [
+    [{
+        "user_id": 1,
+        "course": "CS 410",
+        "title": "Capstone",
+        "days": ["M", "W"],
+        "start_time": "16:00",
+        "end_time": "17:20"
+    },
+    {
+        "user_id": 2,
+        "course": "FR 203",
+        "title": "2nd Year French",
+        "days": ["M", "W", "F"],
+        "start_time": "10:00",
+        "end_time": "11:20"
+    }],
+    [{
+        "user_id": 1,
+        "course": "CS 415",
+        "title": "Operating Systems",
+        "days": ["M", "W"],
+        "start_time": "15:00",
+        "end_time": "16:20"
+    },
+    {
+        "user_id": 2,
+        "course": "MATH 343",
+        "title": "Stats",
+        "days": ["T", "TR", "F"],
+        "start_time": "16:00",
+        "end_time": "17:20"
+    }]
+]
+
+# Calculate common free times using the dummy data
+common_free_times = find_common_free_times(schedules)
+
+print(common_free_times)
