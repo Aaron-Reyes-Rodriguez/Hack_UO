@@ -38,8 +38,8 @@ def upload_files():
             parsed_data.append(extract_info_from_html(file.filename))
 
 # Calculate common free times using the dummy data
-    print(parsed_data)
     result = find_common_free_times(parsed_data)
+    print(result)
     # Render the result page with parsed data from all files
     return render_template('result.html', data=result)
 

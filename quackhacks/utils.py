@@ -32,6 +32,17 @@ def intersect_intervals(intervals1, intervals2):
     
     return result
 
+def reorder_schedule(schedule):
+    """Reorders a defaultdict by the days of the week."""
+    week_order = ['M', 'T', 'W', 'R', 'F']
+    reordered = defaultdict(list)
+    
+    for day in week_order:
+        if day in schedule:
+            reordered[day] = schedule[day]
+    
+    return reordered
+
 def find_common_free_times(schedules):
     # Flatten schedules into a single list
     all_courses = [course for user_schedule in schedules for course in user_schedule]
@@ -75,46 +86,5 @@ def find_common_free_times(schedules):
             common_times = intersect_intervals(common_times, free_times)
         
         common_free_times[day] = [(convert_minutes_to_time(start), convert_minutes_to_time(end)) for start, end in common_times]
-    
+    common_free_times = reorder_schedule(common_free_times)
     return common_free_times
-
-# Example dummy JSON data
-schedules = [
-    [{
-        "user_id": 1,
-        "course": "CS 410",
-        "title": "Capstone",
-        "days": ["M", "W"],
-        "start_time": "16:00",
-        "end_time": "17:20"
-    },
-    {
-        "user_id": 2,
-        "course": "FR 203",
-        "title": "2nd Year French",
-        "days": ["M", "W", "F"],
-        "start_time": "10:00",
-        "end_time": "11:20"
-    }],
-    [{
-        "user_id": 1,
-        "course": "CS 415",
-        "title": "Operating Systems",
-        "days": ["M", "W"],
-        "start_time": "15:00",
-        "end_time": "16:20"
-    },
-    {
-        "user_id": 2,
-        "course": "MATH 343",
-        "title": "Stats",
-        "days": ["T", "TR", "F"],
-        "start_time": "16:00",
-        "end_time": "17:20"
-    }]
-]
-
-# Calculate common free times using the dummy data
-common_free_times = find_common_free_times(schedules)
-
-print(common_free_times)
