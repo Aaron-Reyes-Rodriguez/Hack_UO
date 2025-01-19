@@ -97,7 +97,12 @@ def list_to_dict(course_total, times_list, days_list):
         course_info.append(end_times_list[i])
         course_dict = dict(zip(keys, course_info))
         schedule.append(course_dict)
-    print(schedule)
+    dict_to_json(schedule)
+
+def dict_to_json(schedule_dict):
+    json_string = json.dumps(schedule_dict, indent=4)
+    return json_string
+    #print(json_string)
 
 
 # untested addition
