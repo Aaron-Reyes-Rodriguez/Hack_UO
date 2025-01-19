@@ -104,8 +104,8 @@ def list_to_dict(course_total, times_list, days_list):
 
 def dict_to_json(schedule_dict):
     json_string = json.dumps(schedule_dict, indent=4)
-    #return json_string
-    print(json_string)
+    return json_string
+    #print(json_string)
 
 
 #pull file name passed into function
