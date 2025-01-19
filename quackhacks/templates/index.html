@@ -5,19 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <title>Schedule Planner</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}">
 </head>
 <body>
-    <div class="container mt-5">
-        <h1>Upload Your Schedule Files</h1>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <input type="file" class="form-control-file" name="scheduleFiles" multiple required>
-            </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
+    <div class="container">
+        <div class="container_header">
+            <h1>Super Swag Schedule Scheduler</h1>
+        </div>
+        <div class="container_body">
+            <h2>Upload Your Schedule Files</h2>
+                <div class="form-group">
+                    <input type="file" id="schedule_file" name="schedule_file" multiple required hidden>
+                    <label for="schedule_file" class="btn btn-primary">Choose Files</label>
+                    <span id="file_name" class="ml-2 text-muted">No file chosen</span>
+                        <script>
+                            document.getElementById('schedule_file').addEventListener('change', function () {
+                                const file_name = Array.from(this.files).map(file => file.name).join(', ');
+                                document.getElementById('file_name').textContent = file_name || 'No file chosen';
+                            });
+                        </script>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
