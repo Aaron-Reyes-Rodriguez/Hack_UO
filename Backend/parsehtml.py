@@ -23,8 +23,6 @@ def extract_info_from_html(file_path):
         print(f"Error: The file '{file_path}' does not exist.")
 
 def save_class_info(soup):
-    keys = ['Course Name', 'Day(s)', 'Start Time', 'End Time']
-
     target_table = soup.find_all("table", class_="datadisplaytable")
 
     child_ctr = 0
@@ -50,9 +48,28 @@ def save_class_info(soup):
             for time in grandchildren[9]:
                 times_list.append(time)
     course_total = [' '.join(z) for z in zip(course_nums_list, course_names_list)]
-    print(course_total)
+    list_to_dict(course_total, times_list, days_list)
+
+def list_to_dict(course_total, times_list, days_list):
+    #fix times
+    start_times_list = []
+    end_times_list = []
+    #for str in times_list:
+    #    tempstart = str.
+
+    keys = ['Course Name', 'Day(s)', 'Time']
+    num_courses = len(course_total)
+    course_dict = {}
+    schedule = []
+    for i in range(num_courses):
+        course_info = []
+        course_info.append(course_total[i])
+        course_info.append(days_list[i])
+        course_info.append(times_list[i])
+        course_dict = dict(zip(keys, course_info))
+        schedule.append(course_dict)
     print(times_list)
-    print(days_list)                    
+
 
 # untested addition
 # extract the class schedule
