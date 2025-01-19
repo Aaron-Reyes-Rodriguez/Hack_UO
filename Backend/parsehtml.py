@@ -54,6 +54,12 @@ def list_to_dict(course_total, times_list, days_list):
     #fix times
     start_times_list = []
     end_times_list = []
+    for time in times_list:
+        start_time, end_time = time.split(" - ")
+        start_times_list.append(start_time)
+        end_times_list.append(end_time)
+    print(start_times_list)
+    print(end_times_list)
     #for str in times_list:
     #    tempstart = str.
 
@@ -68,7 +74,7 @@ def list_to_dict(course_total, times_list, days_list):
         course_info.append(times_list[i])
         course_dict = dict(zip(keys, course_info))
         schedule.append(course_dict)
-    print(times_list)
+    # print(times_list)
 
 
 # untested addition
