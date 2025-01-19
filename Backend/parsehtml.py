@@ -31,10 +31,10 @@ def save_class_info(soup):
 # extract the class schedule
 data = []
 for link in soup.find_all("CLASS"):
-    title = link.text.strip()  # Get the text
+    course = link.text.strip()  # Get the text
     href = link.get("href")   # Get the href attribute
     if href:  # Ensure the link is not None
-        data.append({"title": title, "link": href})
+        data.append({"course": course, "link": href})
 
 # convert and save as JSON
 json_data = json.dumps(data, indent=4)
