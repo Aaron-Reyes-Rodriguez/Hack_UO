@@ -12,7 +12,7 @@ Using the "Choose File" button, select multiple student schedules downloaded in 
 ## Features
 - **Upload Multiple Schedules**: Easily upload student schedules in HTML format.
 - **Shared Free Time Detection**: Automatically detects and displays common free time slots.
-- **User-Friendly Interface**: Clean and simple UI designed to save time and effort.
+- **User-Friendly Interface**: Clean and simple UI with a colorblind friendly color scheme, designed to save time and effort.
 
 ---
 
