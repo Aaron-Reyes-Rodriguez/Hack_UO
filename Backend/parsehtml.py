@@ -73,6 +73,10 @@ def convert_to_24_hour_start_end(time_range):
 
     return start, end
 
+def parse_days_to_list(class_days):
+    day_list = list(class_days)
+    return day_list
+
 def list_to_dict(course_total, times_list, days_list):
     #fix times
     start_times_list = []
@@ -84,14 +88,14 @@ def list_to_dict(course_total, times_list, days_list):
     # print(start_times_list)
     # print(end_times_list)
 
-    keys = ['Course Name', 'Day(s)', 'Start Time', 'End Time']
+    keys = ['course', 'days', 'start_time', 'end_time']
     num_courses = len(course_total)
     course_dict = {}
     schedule = []
     for i in range(num_courses):
         course_info = []
         course_info.append(course_total[i])
-        course_info.append(days_list[i])
+        course_info.append(parse_days_to_list(days_list[i]))
         course_info.append(start_times_list[i])
         course_info.append(end_times_list[i])
         course_dict = dict(zip(keys, course_info))
