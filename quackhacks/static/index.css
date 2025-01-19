@@ -1,0 +1,57 @@
+@import 'node_modules/bootstrap/scss/bootstrap';
+
+/* Uploading my own font */
+@font-face {
+    font-family: 'Hilumions Sans';
+    src: url('HILUMIONSANSDEMO.ttf') format('opentype');
+}
+
+
+body {
+    background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
+}
+
+.container_header {
+    margin-top: 50px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.container_body {
+    margin-top: 50px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* website title */
+h1 {
+    text-align: center;
+    font-family: 'Hilumions Sans';
+    color: rgba(238,174,202,1);
+    font-size:80px;
+}
+
+/* subheading */
+h2 {
+    text-align: left;
+    font-family: 'Hilumions Sans';
+    color: rgba(148,187,233,1);
+    font-size:45px;
+}
+
+/* buttons */
+.btn-primary {
+    font-family: "Lucida Console", monospace;
+    background-color: rgba(148,187,233,1); /* Bootstrap primary blue */
+    border-color: rgba(148,187,233,1);
+}
+.btn-primary:hover {
+    background-color: rgba(93, 131, 176, 0.8);
+}
